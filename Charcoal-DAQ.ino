@@ -53,9 +53,10 @@ void getThermocoupleTemps(){
 // DustTrak II //
 /////////////////
 #define DUSTTRAKPIN 1
+float dustTrak;
 
 void getDustTrak(){
-  dustTrak = ((float) analogRead(DUSTTRAKPIN) - 10) / 1023 * 20);
+  dustTrak = ((float) analogRead(DUSTTRAKPIN) - 10) / 1023 * 20;
 }
 
 
