@@ -4,7 +4,7 @@
 */
 
 
-#include "ds18b20.h"
+#include "./ds18b20.h"
 
 DS18B20::DS18B20(uint8_t pin, uint8_t max_dev) : wire(pin){
   addr_table = (uint8_t*)malloc(max_dev * 8);

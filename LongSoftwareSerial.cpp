@@ -41,7 +41,7 @@ http://arduiniana.org.
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <Arduino.h>
-#include "LongSoftwareSerial.h"
+#include "./LongSoftwareSerial.h"
 #include <util/delay_basic.h>
 
 //

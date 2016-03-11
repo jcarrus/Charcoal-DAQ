@@ -1,29 +1,29 @@
 ////////////////////
 // Timing library //
 ////////////////////
-#include "SimpleTimer.h"
+#include "./SimpleTimer.h"
 SimpleTimer timer;
 
 
 ///////////////
 // Load Cell //
 ///////////////
-#include "Q2HX711.h"
+#include "./Q2HX711.h"
 const byte hx711_data_pin = 13;
 const byte hx711_clock_pin = 12;
 Q2HX711 hx711(hx711_data_pin, hx711_clock_pin);
 float mass, tare;
 
 void getLoadCell(){
-  mass = 0.0000086617*hx711.read() - 74.3060307251 - tare;
+  mass = 0.0000086617* (float) hx711.read() - 74.3060307251 - tare;
 }
 
 
 ////////////////////////////////
 // Dallas Temperature Library //
 ////////////////////////////////
-#include "OneWire.h"
-#include "DallasTemperature.h"
+#include "./OneWire.h"
+#include "./DallasTemperature.h"
 #define ONE_WIRE_BUS 3
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -48,7 +48,7 @@ void getDallasTemps(){
 ///////////////////////////////////
 // Adafruit Thermocouple Library //
 ///////////////////////////////////
-#include "Adafruit_MAX31855.h"
+#include "./Adafruit_MAX31855.h"
 #define THERMOCLK 9
 #define THERMODO  4
 #define THERMO1CS 5
@@ -70,14 +70,14 @@ void getThermocoupleTemps(){
 float dustTrak;
 
 void getDustTrak(){
-  dustTrak = ((float) analogRead(DUSTTRAKPIN) - 10) / 1023 * 20;
+  dustTrak = ((float) analogRead(DUSTTRAKPIN)) / 1023 * 20;
 }
 
 
 ///////////////
 // Bacharach //
 ///////////////
-#include "LongSoftwareSerial.h"
+#include "./LongSoftwareSerial.h"
 #define SOFTTX 11
 #define SOFTRX 10
 LongSoftwareSerial softSerial(SOFTRX, SOFTTX);
@@ -171,7 +171,7 @@ void loop(void) {
 void log(){
   Serial.print((unsigned long) (millis()/1000));
   Serial.print(',');
-  Serial.print(mass);
+  Serial.print(mass,4);
   Serial.print(',');
   Serial.print(temp1);
   Serial.print(',');

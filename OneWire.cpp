@@ -114,7 +114,7 @@ sample code bearing this copyright.
 //--------------------------------------------------------------------------
 */
 
-#include "OneWire.h"
+#include "./OneWire.h"
 
 
 OneWire::OneWire(uint8_t pin)

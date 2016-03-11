@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Q2HX711.h"
+#include "./Q2HX711.h"
 
 Q2HX711::Q2HX711(byte output_pin, byte clock_pin) {
   CLOCK_PIN  = clock_pin;
