@@ -1,5 +1,5 @@
 /*
-SoftwareSerial.h (formerly NewSoftSerial.h) - 
+LongSoftwareSerial.h (formerly NewSoftSerial.h) - 
 Multi-instance software serial library for Arduino/Wiring
 -- Interrupt-driven receive and other improvements by ladyada
    (http://ladyada.net)
@@ -29,8 +29,8 @@ The latest version of this library can always be found at
 http://arduiniana.org.
 */
 
-#ifndef SoftwareSerial_h
-#define SoftwareSerial_h
+#ifndef LongSoftwareSerial_h
+#define LongSoftwareSerial_h
 
 #include <inttypes.h>
 #include <Stream.h>
@@ -44,7 +44,7 @@ http://arduiniana.org.
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
-class SoftwareSerial : public Stream
+class LongSoftwareSerial : public Stream
 {
 private:
   // per object data
@@ -69,7 +69,7 @@ private:
   static char _receive_buffer[_SS_MAX_RX_BUFF]; 
   static volatile uint8_t _receive_buffer_tail;
   static volatile uint8_t _receive_buffer_head;
-  static SoftwareSerial *active_object;
+  static LongSoftwareSerial *active_object;
 
   // private methods
   inline void recv() __attribute__((__always_inline__));
@@ -86,8 +86,8 @@ private:
 
 public:
   // public methods
-  SoftwareSerial(uint8_t receivePin, uint8_t transmitPin, bool inverse_logic = false);
-  ~SoftwareSerial();
+  LongSoftwareSerial(uint8_t receivePin, uint8_t transmitPin, bool inverse_logic = false);
+  ~LongSoftwareSerial();
   void begin(long speed);
   bool listen();
   void end();

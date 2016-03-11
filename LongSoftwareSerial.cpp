@@ -1,5 +1,5 @@
 /*
-SoftwareSerial.cpp (formerly NewSoftSerial.cpp) - 
+LongSoftwareSerial.cpp (formerly NewSoftSerial.cpp) - 
 Multi-instance software serial library for Arduino/Wiring
 -- Interrupt-driven receive and other improvements by ladyada
    (http://ladyada.net)
@@ -41,16 +41,16 @@ http://arduiniana.org.
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <Arduino.h>
-#include "SoftwareSerial.h"
+#include "LongSoftwareSerial.h"
 #include <util/delay_basic.h>
 
 //
 // Statics
 //
-SoftwareSerial *SoftwareSerial::active_object = 0;
-char SoftwareSerial::_receive_buffer[_SS_MAX_RX_BUFF]; 
-volatile uint8_t SoftwareSerial::_receive_buffer_tail = 0;
-volatile uint8_t SoftwareSerial::_receive_buffer_head = 0;
+LongSoftwareSerial *LongSoftwareSerial::active_object = 0;
+char LongSoftwareSerial::_receive_buffer[_SS_MAX_RX_BUFF]; 
+volatile uint8_t LongSoftwareSerial::_receive_buffer_tail = 0;
+volatile uint8_t LongSoftwareSerial::_receive_buffer_head = 0;
 
 //
 // Debugging
@@ -78,13 +78,13 @@ inline void DebugPulse(uint8_t, uint8_t) {}
 //
 
 /* static */ 
-inline void SoftwareSerial::tunedDelay(uint16_t delay) { 
+inline void LongSoftwareSerial::tunedDelay(uint16_t delay) { 
   _delay_loop_2(delay);
 }
 
 // This function sets the current object as the "listening"
 // one and returns true if it replaces another 
-bool SoftwareSerial::listen()
+bool LongSoftwareSerial::listen()
 {
   if (!_rx_delay_stopbit)
     return false;
@@ -106,7 +106,7 @@ bool SoftwareSerial::listen()
 }
 
 // Stop listening. Returns true if we were actually listening.
-bool SoftwareSerial::stopListening()
+bool LongSoftwareSerial::stopListening()
 {
   if (active_object == this)
   {
@@ -120,7 +120,7 @@ bool SoftwareSerial::stopListening()
 //
 // The receive routine called by the interrupt handler
 //
-void SoftwareSerial::recv()
+void LongSoftwareSerial::recv()
 {
 
 #if GCC_VERSION < 40302
@@ -206,7 +206,7 @@ void SoftwareSerial::recv()
 #endif
 }
 
-uint8_t SoftwareSerial::rx_pin_read()
+uint8_t LongSoftwareSerial::rx_pin_read()
 {
   return *_receivePortRegister & _receiveBitMask;
 }
@@ -216,7 +216,7 @@ uint8_t SoftwareSerial::rx_pin_read()
 //
 
 /* static */
-inline void SoftwareSerial::handle_interrupt()
+inline void LongSoftwareSerial::handle_interrupt()
 {
   if (active_object)
   {
@@ -227,7 +227,7 @@ inline void SoftwareSerial::handle_interrupt()
 #if defined(PCINT0_vect)
 ISR(PCINT0_vect)
 {
-  SoftwareSerial::handle_interrupt();
+  LongSoftwareSerial::handle_interrupt();
 }
 #endif
 
@@ -246,7 +246,7 @@ ISR(PCINT3_vect, ISR_ALIASOF(PCINT0_vect));
 //
 // Constructor
 //
-SoftwareSerial::SoftwareSerial(uint8_t receivePin, uint8_t transmitPin, bool inverse_logic /* = false */) : 
+LongSoftwareSerial::LongSoftwareSerial(uint8_t receivePin, uint8_t transmitPin, bool inverse_logic /* = false */) : 
   _rx_delay_centering(0),
   _rx_delay_intrabit(0),
   _rx_delay_stopbit(0),
@@ -261,12 +261,12 @@ SoftwareSerial::SoftwareSerial(uint8_t receivePin, uint8_t transmitPin, bool inv
 //
 // Destructor
 //
-SoftwareSerial::~SoftwareSerial()
+LongSoftwareSerial::~LongSoftwareSerial()
 {
   end();
 }
 
-void SoftwareSerial::setTX(uint8_t tx)
+void LongSoftwareSerial::setTX(uint8_t tx)
 {
   // First write, then set output. If we do this the other way around,
   // the pin would be output low for a short while before switching to
@@ -279,7 +279,7 @@ void SoftwareSerial::setTX(uint8_t tx)
   _transmitPortRegister = portOutputRegister(port);
 }
 
-void SoftwareSerial::setRX(uint8_t rx)
+void LongSoftwareSerial::setRX(uint8_t rx)
 {
   pinMode(rx, INPUT);
   if (!_inverse_logic)
@@ -290,7 +290,7 @@ void SoftwareSerial::setRX(uint8_t rx)
   _receivePortRegister = portInputRegister(port);
 }
 
-uint16_t SoftwareSerial::subtract_cap(uint16_t num, uint16_t sub) {
+uint16_t LongSoftwareSerial::subtract_cap(uint16_t num, uint16_t sub) {
   if (num > sub)
     return num - sub;
   else
@@ -301,7 +301,7 @@ uint16_t SoftwareSerial::subtract_cap(uint16_t num, uint16_t sub) {
 // Public methods
 //
 
-void SoftwareSerial::begin(long speed)
+void LongSoftwareSerial::begin(long speed)
 {
   _rx_delay_centering = _rx_delay_intrabit = _rx_delay_stopbit = _tx_delay = 0;
 
@@ -374,7 +374,7 @@ void SoftwareSerial::begin(long speed)
   listen();
 }
 
-void SoftwareSerial::setRxIntMsk(bool enable)
+void LongSoftwareSerial::setRxIntMsk(bool enable)
 {
     if (enable)
       *_pcint_maskreg |= _pcint_maskvalue;
@@ -382,14 +382,14 @@ void SoftwareSerial::setRxIntMsk(bool enable)
       *_pcint_maskreg &= ~_pcint_maskvalue;
 }
 
-void SoftwareSerial::end()
+void LongSoftwareSerial::end()
 {
   stopListening();
 }
 
 
 // Read data from buffer
-int SoftwareSerial::read()
+int LongSoftwareSerial::read()
 {
   if (!isListening())
     return -1;
@@ -404,7 +404,7 @@ int SoftwareSerial::read()
   return d;
 }
 
-int SoftwareSerial::available()
+int LongSoftwareSerial::available()
 {
   if (!isListening())
     return 0;
@@ -412,7 +412,7 @@ int SoftwareSerial::available()
   return (_receive_buffer_tail + _SS_MAX_RX_BUFF - _receive_buffer_head) % _SS_MAX_RX_BUFF;
 }
 
-size_t SoftwareSerial::write(uint8_t b)
+size_t LongSoftwareSerial::write(uint8_t b)
 {
   if (_tx_delay == 0) {
     setWriteError();
@@ -467,12 +467,12 @@ size_t SoftwareSerial::write(uint8_t b)
   return 1;
 }
 
-void SoftwareSerial::flush()
+void LongSoftwareSerial::flush()
 {
   // There is no tx buffering, simply return
 }
 
-int SoftwareSerial::peek()
+int LongSoftwareSerial::peek()
 {
   if (!isListening())
     return -1;
