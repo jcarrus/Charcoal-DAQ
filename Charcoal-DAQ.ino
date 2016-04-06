@@ -9,8 +9,8 @@ SimpleTimer timer;
 // Load Cell //
 ///////////////
 #include "./Q2HX711.h"
-const byte hx711_data_pin = 13;
-const byte hx711_clock_pin = 12;
+const byte hx711_data_pin = 53;
+const byte hx711_clock_pin = 52;
 Q2HX711 hx711(hx711_data_pin, hx711_clock_pin);
 float mass, tare;
 
@@ -24,7 +24,7 @@ void getLoadCell(){
 ////////////////////////////////
 #include "./OneWire.h"
 #include "./DallasTemperature.h"
-#define ONE_WIRE_BUS 3
+#define ONE_WIRE_BUS 51
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 DeviceAddress T1 = { 0x28, 0x8A, 0xB0, 0xC3, 0x06, 0x00, 0x00, 0x14 };
@@ -49,10 +49,10 @@ void getDallasTemps(){
 // Adafruit Thermocouple Library //
 ///////////////////////////////////
 #include "./Adafruit_MAX31855.h"
-#define THERMOCLK 9
-#define THERMODO  4
-#define THERMO1CS 5
-#define THERMO2CS 6
+#define THERMOCLK 49
+#define THERMODO  48
+#define THERMO1CS 46
+#define THERMO2CS 47
 Adafruit_MAX31855 thermocouple1(THERMOCLK, THERMO1CS, THERMODO);
 Adafruit_MAX31855 thermocouple2(THERMOCLK, THERMO2CS, THERMODO);
 float thermo1, thermo2;
@@ -66,7 +66,7 @@ void getThermocoupleTemps(){
 /////////////////
 // DustTrak II //
 /////////////////
-#define DUSTTRAKPIN 1
+#define DUSTTRAKPIN 22
 float dustTrak;
 
 void getDustTrak(){
@@ -77,21 +77,17 @@ void getDustTrak(){
 ///////////////
 // Bacharach //
 ///////////////
-#include "./LongSoftwareSerial.h"
-#define SOFTTX 11
-#define SOFTRX 10
-LongSoftwareSerial softSerial(SOFTRX, SOFTTX);
 float O2, CO, Tair, NO, NO2, NOx, SO2;
 
 void getBacharach(){
-  if (softSerial.available() > 25){
+  if (Serial1.available() > 25){
     // Starting read
-    char c = softSerial.read();
+    char c = Serial1.read();
     int i = 0;
     while (c != '\n'){
       String d = String();
-      while((char) softSerial.peek() != ',' && (char) softSerial.peek() != '\n' ){
-        d += (char) softSerial.read();
+      while((char) Serial1.peek() != ',' && (char) Serial1.peek() != '\n' ){
+        d += (char) Serial1.read();
       }
       switch (i){
         case 9:
@@ -117,7 +113,7 @@ void getBacharach(){
 	        break;
       }
       // Clear the comma or newline
-      c = softSerial.read();
+      c = Serial1.read();
       i++;
     }
   }
@@ -153,14 +149,14 @@ void setup(void) {
   timer.setInterval(1000, getDustTrak);
 
   // Set up Bacharach
-  softSerial.begin(19200);
+  Serial1.begin(19200);
   // Clear the serial buffer
   while(softSerial.available() && softSerial.read() != '\n'){}
   timer.setInterval(1000, getBacharach);
   
   // Log the data
-  Serial.print("time,mass,temp1,temp2,temp3,temp4,temp5,thermo1,");
-  Serial.println("thermo2,dustTrak,O2,CO,Tair,NO,NO2,NOx,SO2");
+  Serial.print("time,temp1,temp2,temp3,temp4,temp5,thermo1,");
+  Serial.println("thermo2,dustTrak,O2,CO,Tair,NO,NO2,NOx,SO2,mass");
   timer.setInterval(1000, log);
 }
 
@@ -170,8 +166,6 @@ void loop(void) {
 
 void log(){
   Serial.print((unsigned long) (millis()/1000));
-  Serial.print(',');
-  Serial.print(mass,4);
   Serial.print(',');
   Serial.print(temp1);
   Serial.print(',');
@@ -202,6 +196,8 @@ void log(){
   Serial.print(NOx);
   Serial.print(',');
   Serial.print(SO2);
+  Serial.print(',');
+  Serial.print(mass,4);
   Serial.println();
 }
 
