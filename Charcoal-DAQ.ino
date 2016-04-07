@@ -66,7 +66,7 @@ void getThermocoupleTemps(){
 /////////////////
 // DustTrak II //
 /////////////////
-#define DUSTTRAKPIN 22
+#define DUSTTRAKPIN 0 // A0
 float dustTrak;
 
 void getDustTrak(){
@@ -80,6 +80,12 @@ void getDustTrak(){
 float O2, CO, Tair, NO, NO2, NOx, SO2;
 
 void getBacharach(){
+  return;
+  while(Serial1.available()){
+    Serial.print((char) Serial1.read());
+  }
+  Serial.println();
+  return;
   if (Serial1.available() > 25){
     // Starting read
     char c = Serial1.read();
@@ -120,6 +126,41 @@ void getBacharach(){
 }
 
 
+//////////////////////
+// COZIR C02 Sensor //
+//////////////////////
+char buffer[20];
+int C02;
+
+void getCozir(){
+  Serial2.print('Z');
+  Serial2.print("\r\n");
+  // empty buffer
+  buffer[0] = '\0';
+  // read answer; there may be a 100ms delay!
+  // TODO: PROPER TIMEOUT CODE.
+  delay(250);  
+  int idx = 0;
+  while(Serial2.available())
+  {
+  buffer[idx++] = Serial2.read();
+  }
+  buffer[idx] = '\0';
+  uint16_t rv = 0;
+
+  switch(buffer[1])
+  {
+    case 'T' :
+            rv = atoi(&buffer[5]);
+            if (buffer[4] == 1) rv += 1000;
+            break;
+    default :
+            rv = atoi(&buffer[2]);
+            break;
+  }
+  C02 = rv;
+}
+
 ///////////////////////////////////
 // Setup, Loop, and Log function //
 /////////////////////////////////// 
@@ -151,12 +192,16 @@ void setup(void) {
   // Set up Bacharach
   Serial1.begin(19200);
   // Clear the serial buffer
-  while(softSerial.available() && softSerial.read() != '\n'){}
-  timer.setInterval(1000, getBacharach);
+  Serial1.flush();
+  timer.setInterval(800, getBacharach);
+
+  // Set up the COZIR C02 sensor
+  Serial2.begin(9600);
+  timer.setInterval(1000, getCozir);
   
   // Log the data
   Serial.print("time,temp1,temp2,temp3,temp4,temp5,thermo1,");
-  Serial.println("thermo2,dustTrak,O2,CO,Tair,NO,NO2,NOx,SO2,mass");
+  Serial.println("thermo2,dustTrak,C02,mass");
   timer.setInterval(1000, log);
 }
 
@@ -183,6 +228,7 @@ void log(){
   Serial.print(',');
   Serial.print(dustTrak);
   Serial.print(',');
+  /*
   Serial.print(O2);
   Serial.print(',');
   Serial.print(CO);
@@ -196,6 +242,9 @@ void log(){
   Serial.print(NOx);
   Serial.print(',');
   Serial.print(SO2);
+  Serial.print(',');*/
+  
+  Serial.print(C02);
   Serial.print(',');
   Serial.print(mass,4);
   Serial.println();
