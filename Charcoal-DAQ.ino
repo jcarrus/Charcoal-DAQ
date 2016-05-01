@@ -66,14 +66,12 @@ void getThermocoupleTemps(){
 /////////////////
 // DustTrak II //
 /////////////////
-#define DUSTTRAKPIN 0 // A0
+#define DUSTTRAKPIN A0 // A0
 float dustTrak;
 
 void getDustTrak(){
   dustTrak = ((float) analogRead(DUSTTRAKPIN)) / 1023 * 20;
-  dustTrak = ((float) analogRead(DUSTTRAKPIN)) / 1023 * 20;
 }
-
 
 ///////////////
 // Bacharach //
@@ -81,11 +79,12 @@ void getDustTrak(){
 float O2, CO, Tair, NO, NO2, NOx, SO2;
 
 void getBacharach(){
+	/*
   while(Serial1.available()){
     Serial.print((char) Serial1.read());
   }
   Serial.println();
-  return;
+  return;*/
   if (Serial1.available() > 25){
     // Starting read
     char c = Serial1.read();
@@ -96,26 +95,25 @@ void getBacharach(){
         d += (char) Serial1.read();
       }
       switch (i){
-        case 9:
-                Serial.println(d);
+        case 8:
 	        O2 = d.toFloat();
 	        break;
-        case 10:
+        case 9:
 	        CO = d.toFloat();
 	        break;
-        case 15:
+        case 14:
 	        Tair = d.toFloat();
 	        break;
-        case 17:
+        case 16:
 	        NO = d.toFloat();
 	        break;
-        case 18:
+        case 17:
 	        NO2 = d.toFloat();
 	        break;
-        case 19:
+        case 18:
 	        NOx = d.toFloat();
 	        break;
-        case 20:
+        case 19:
 	        SO2 = d.toFloat();
 	        break;
       }
@@ -165,9 +163,10 @@ void getCozir(){
 ///////////////////////////////////
 // Setup, Loop, and Log function //
 /////////////////////////////////// 
+#define SERIAL_BUFFER_SIZE 256
 void setup(void) {
   Serial.begin(9600);
-
+	
   // Set up the Load Cell
   getLoadCell();
   tare = mass;
@@ -188,8 +187,9 @@ void setup(void) {
   timer.setInterval(1000, getThermocoupleTemps);
 
   // Set up the DustTrak
+	pinMode(DUSTTRAKPIN, INPUT);
   timer.setInterval(1000, getDustTrak);
-
+	
   // Set up Bacharach
   Serial1.begin(19200);
   // Clear the serial buffer
