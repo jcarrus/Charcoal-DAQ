@@ -1,4 +1,4 @@
-////////////////////
+///////////////////
 // Timing library //
 ////////////////////
 #include "./SimpleTimer.h"
@@ -71,6 +71,7 @@ float dustTrak;
 
 void getDustTrak(){
   dustTrak = ((float) analogRead(DUSTTRAKPIN)) / 1023 * 20;
+  dustTrak = ((float) analogRead(DUSTTRAKPIN)) / 1023 * 20;
 }
 
 
@@ -80,7 +81,6 @@ void getDustTrak(){
 float O2, CO, Tair, NO, NO2, NOx, SO2;
 
 void getBacharach(){
-  return;
   while(Serial1.available()){
     Serial.print((char) Serial1.read());
   }
@@ -97,12 +97,13 @@ void getBacharach(){
       }
       switch (i){
         case 9:
+                Serial.println(d);
 	        O2 = d.toFloat();
 	        break;
         case 10:
 	        CO = d.toFloat();
 	        break;
-        case 14:
+        case 15:
 	        Tair = d.toFloat();
 	        break;
         case 17:
@@ -201,7 +202,7 @@ void setup(void) {
   
   // Log the data
   Serial.print("time,temp1,temp2,temp3,temp4,temp5,thermo1,");
-  Serial.println("thermo2,dustTrak,C02,mass");
+  Serial.println("thermo2,dustTrak,O2,CO,T_air,NO,NO2,NOX,SO2,C02,mass");
   timer.setInterval(1000, log);
 }
 
@@ -228,7 +229,7 @@ void log(){
   Serial.print(',');
   Serial.print(dustTrak);
   Serial.print(',');
-  /*
+  
   Serial.print(O2);
   Serial.print(',');
   Serial.print(CO);
@@ -242,7 +243,7 @@ void log(){
   Serial.print(NOx);
   Serial.print(',');
   Serial.print(SO2);
-  Serial.print(',');*/
+  Serial.print(',');
   
   Serial.print(C02);
   Serial.print(',');
